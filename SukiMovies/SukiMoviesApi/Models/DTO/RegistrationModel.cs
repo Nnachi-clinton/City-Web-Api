@@ -11,10 +11,11 @@ namespace SukiMoviesApi.Models.DTO
         public string Email { get; set; }
 
         [Required]
-        public string Passowrd { get; set; }
+        public string Password { get; set; }
 
         [Required]
         public string Name { get; set; }
     }
 
 }
+

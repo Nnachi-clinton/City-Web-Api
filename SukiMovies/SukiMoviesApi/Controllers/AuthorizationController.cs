@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage;
+using SukiMoviesApi.Models;
 using SukiMoviesApi.Models.Domain;
 using SukiMoviesApi.Models.DTO;
 using SukiMoviesApi.Repositories.Abstract;
@@ -94,6 +95,149 @@ namespace SukiMoviesApi.Controllers
                    Token = "",
                    Expiration = null
                });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Registration([FromBody] RegistrationModel model)
+        {
+            var status = new Status();
+            if (!ModelState.IsValid)
+            {
+                status.StatusCode = 0;
+                status.Message = "Please pass all the required fields";
+                return Ok(status);
+            }
+            // check if user exists
+            var userExists = await _userManager.FindByNameAsync(model.UserName);
+            if (userExists != null)
+            {
+                status.StatusCode = 0;
+                status.Message = "Invalid username";
+                return Ok(status);
+            }
+            var user = new ApplicationUser
+            {
+                UserName = model.UserName,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Email = model.Email,
+                Name = model.Name
+            };
+            // create a user here
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                status.StatusCode = 0;
+                status.Message = "User creation failed";
+                return Ok(status);
+            }
+
+            // add roles here
+            // for admin registration UserRoles.Admin instead of UserRoles.Roles
+            if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+
+            if (await _roleManager.RoleExistsAsync(UserRoles.User))
+            {
+                await _userManager.AddToRoleAsync(user, UserRoles.User);
+            }
+            status.StatusCode = 200;
+            status.Message = "Sucessfully registered";
+            return Ok(status);
+
+        }
+
+
+
+       // after registering admin we will comment this code, because i want only one admin in this application
+       [HttpPost]
+        public async Task<IActionResult> RegistrationAdmin([FromBody] RegistrationModel model)
+        {
+            var status = new Status();
+            if (!ModelState.IsValid)
+            {
+                status.StatusCode = 0;
+                status.Message = "Please pass all the required fields";
+                return Ok(status);
+            }
+            // check if user exists
+            var userExists = await _userManager.FindByNameAsync(model.UserName);
+            if (userExists != null)
+            {
+                status.StatusCode = 0;
+                status.Message = "Invalid username";
+                return Ok(status);
+            }
+            var user = new ApplicationUser
+            {
+                UserName = model.UserName,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                Email = model.Email,
+                Name = model.Name
+            };
+            // create a user here
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                status.StatusCode = 0;
+                status.Message = "User creation failed";
+                return Ok(status);
+            }
+
+            // add roles here
+            // for admin registration UserRoles.Admin instead of UserRoles.Roles
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+
+            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+            {
+                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+            }
+            status.StatusCode = 1;
+            status.Message = "Sucessfully registered";
+            return Ok(status);
+
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            var status = new Status();
+            // check validations
+            if (!ModelState.IsValid)
+            {
+                status.StatusCode = 0;
+                status.Message = "please pass all the valid fields";
+                return Ok(status);
+            }
+            // lets find the user
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user is null)
+            {
+                status.StatusCode = 0;
+                status.Message = "invalid username";
+                return Ok(status);
+            }
+            // check current password
+            if (!await _userManager.CheckPasswordAsync(user, model.CurrentPassword))
+            {
+                status.StatusCode = 0;
+                status.Message = "invalid current password";
+                return Ok(status);
+            }
+
+            // change password here
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                status.StatusCode = 0;
+                status.Message = "Failed to change password";
+                return Ok(status);
+            }
+            status.StatusCode = 1;
+            status.Message = "Password has changed successfully";
+            return Ok(result);
         }
 
     }

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SukiMoviesApi.Models.Domain;
+using SukiMoviesApi.Repositories.Abstract;
+using SukiMoviesApi.Repositories.Domain;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,7 +45,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
 
 var app = builder.Build();
 

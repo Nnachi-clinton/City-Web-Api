@@ -12,5 +12,9 @@ namespace SukiMoviesApi.Models.DTO
 
         [Required]
         public string Passowrd { get; set; }
+
+        [Required]
+        public string Name { get; set; }
     }
+
 }

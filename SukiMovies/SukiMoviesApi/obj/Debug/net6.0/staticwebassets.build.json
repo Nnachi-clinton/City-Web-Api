@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "EQUjaK8jPOvSa0KIKd5Fogq6pK5dFj2TzSk2+M0auqc=",
+  "Source": "SukiMoviesApi",
+  "BasePath": "_content/SukiMoviesApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

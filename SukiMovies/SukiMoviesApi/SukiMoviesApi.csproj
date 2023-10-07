@@ -17,9 +17,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\Domain\" />
-    <Folder Include="Repositories\Abstract\" />
-  </ItemGroup>
-
 </Project>
